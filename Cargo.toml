@@ -1,0 +1,23 @@
+[package]
+name = "op2secret"
+authors = ["Mikkel Kroman <mk@maero.dk>"]
+description = "Read values from a 1password item and generate a Kubernetes Secret manifest"
+repository = "https://github.com/mkroman/op2secret"
+version = "0.1.0"
+edition = "2021"
+categories = ["command-line-utilities"]
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+argh = "0.1.12"
+k8s-openapi = { version = "0.22.0", features = ["latest"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9.34"
+thiserror = "1.0.61"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = "debuginfo"
+panic = "abort"
