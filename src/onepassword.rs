@@ -44,16 +44,19 @@ pub struct Field {
 pub fn get(op_path: &Path, reference: &str) -> Result<Item, Error> {
     let mut cmd = Command::new(op_path);
     let cmd = cmd
+        .args(["--format", "json"])
         .arg("item")
         .arg("get")
-        .args(["--format", "json"])
         .arg(reference);
 
-    if let Ok(output) = cmd.output() {
-        let item: Item = serde_json::from_slice(&output.stdout).map_err(Error::OpReadItemJson)?;
+    let output = cmd.output().map_err(Error::OpExec)?;
 
+    if output.status.success() {
+        let item: Item = serde_json::from_slice(&output.stdout).map_err(Error::OpReadItemJson)?;
         Ok(item)
     } else {
-        Err(Error::OpReadItem)
+        let error_message = String::from_utf8_lossy(&output.stderr);
+
+        Err(Error::OpRead(error_message.to_string()))
     }
 }

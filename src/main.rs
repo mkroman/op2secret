@@ -39,13 +39,12 @@ fn secret_manifest_from_item(
     secret.metadata.name = Some(name);
     secret.metadata.namespace = namespace;
     secret.type_ = Some(type_);
-
     secret.string_data = Some(map_from_item_fields(item));
 
     serde_yaml::to_string(&secret).map_err(Error::SerializeYamlSecret)
 }
 
-fn main() -> Result<(), Error> {
+fn main() -> miette::Result<()> {
     let opts: cli::Opts = argh::from_env();
 
     let item = onepassword::get(opts.op_bin.as_path(), opts.reference.as_str())?;
