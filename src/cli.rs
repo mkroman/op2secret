@@ -9,15 +9,19 @@ pub struct Opts {
     #[argh(positional)]
     pub reference: String,
 
-    /// name of the kubernetes secret
+    /// optional name of the kubernetes secret.
+    ///
+    /// If not specified, the name will be derived from the secret title. Also see the description
+    /// for `namespace'
     #[argh(positional)]
-    pub name: String,
+    pub name: Option<String>,
 
     /// type of the kubernetes secret (defaults to `Opaque')
     #[argh(option, short = 't', default = "String::from(\"Opaque\")")]
     pub type_: String,
 
-    /// namespace of the kubernetes secret
+    /// namespace of the kubernetes secret - if not specified, and the 1Password secret has a title
+    /// in the format `<namespace>/<name>`, then the namespace will be derived from that
     #[argh(option, short = 'n')]
     pub namespace: Option<String>,
 

@@ -44,13 +44,45 @@ fn secret_manifest_from_item(
     serde_yaml::to_string(&secret).map_err(Error::SerializeYamlSecret)
 }
 
+fn extract_secret_name(item_name: &str) -> (Option<String>, String) {
+    if let Some((namespace, name)) = item_name.split_once('/') {
+        (Some(namespace.to_string()), name.to_string())
+    } else {
+        (None, item_name.to_string())
+    }
+}
+
 fn main() -> miette::Result<()> {
     let opts: cli::Opts = argh::from_env();
-
     let item = onepassword::get(opts.op_bin.as_path(), opts.reference.as_str())?;
-    let secret_str = secret_manifest_from_item(&item, opts.name, opts.namespace, opts.type_)?;
+    let (namespace, name) = if let Some(name) = opts.name {
+        (opts.namespace, name.to_string())
+    } else {
+        extract_secret_name(&item.title)
+    };
+    let secret_str = secret_manifest_from_item(&item, name.to_string(), namespace, opts.type_)?;
 
     println!("{secret_str}");
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_ns_and_name() {
+        assert_eq!(
+            extract_secret_name("hello/world"),
+            (Some("hello".to_string()), "world".to_string())
+        );
+        assert_eq!(
+            extract_secret_name("hello/wild-name_with/characters"),
+            (
+                Some("hello".to_string()),
+                "wild-name_with/characters".to_string()
+            )
+        );
+    }
 }
