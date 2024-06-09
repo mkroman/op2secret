@@ -15,7 +15,7 @@ pub struct Item {
     /// The title of the item.
     pub title: String,
     /// List of sections
-    pub sections: Vec<Section>,
+    pub sections: Option<Vec<Section>>,
     /// List of fields
     pub fields: Vec<Field>,
 }
