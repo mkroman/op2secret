@@ -25,7 +25,7 @@ pub struct Opts {
     #[argh(option, short = 'n')]
     pub namespace: Option<String>,
 
-    /// path to `op` CLI executable (defaults to `op')
+    /// path to 1Password CLI executable (overrides the OP_BIN environment variable and defaults to `op')
     #[argh(option, default = "default_op_bin_path()")]
     pub op_bin: PathBuf,
 }

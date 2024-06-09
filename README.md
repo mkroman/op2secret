@@ -42,7 +42,8 @@ Options:
                     the 1Password secret has a title in the format
                     `<namespace>/<name>`, then the namespace will be derived
                     from that
-  --op-bin          path to `op` CLI executable (defaults to `op')
+  --op-bin          path to 1Password CLI executable (overrides the OP_BIN
+                    environment variable and defaults to `op')
   --help            display usage information
 ```
 
