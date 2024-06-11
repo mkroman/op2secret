@@ -56,6 +56,19 @@ jobs:
       with:
         toolchain: stable
         components: clippy
+        targets: ${{ matrix.target }}
+    - name: Cache Cargo
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-${{ matrix.target }}-
     - name: Build release
       run: cargo build --release --target ${{ matrix.target }}
     - name: Upload artifact
