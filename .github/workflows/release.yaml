@@ -5,6 +5,11 @@ on:
     tags:
     - v*
 
+permissions:
+  actions: read
+  contents: write
+  checks: write
+
 jobs:
   test:
     name: Test
