@@ -8,10 +8,16 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-musl]
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-musl
+        - os: windows-latest
+          target: x86_64-pc-windows-msvc
+        - os: macos-latest
+          target: x86_64-apple-darwin
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -42,12 +48,24 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs:
     - test
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-musl]
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-musl
+          artifact: op2secret
+          asset: op2secret-x86_64-unknown-linux-musl
+        - os: windows-latest
+          target: x86_64-pc-windows-msvc
+          artifact: op2secret.exe
+          asset: op2secret-x86_64-pc-windows-msvc
+        - os: macos-latest
+          target: aarch64-apple-darwin
+          artifact: op2secret
+          asset: op2secret-aarch64-apple-darwin
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -74,5 +92,13 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: op2secret-${{ matrix.target }}
-        path: target/${{ matrix.target }}/release/op2secret
+        name: ${{ matrix.asset }}
+        path: target/${{ matrix.target }}/release/${{ matrix.artifact }}
+        # - name: Upload binaries to release
+        #   uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # 2.9.0
+        #   with:
+        #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+        #     file: target/${{ matrix.target }}/release/op2secret
+        #     asset_name: op2secret-${{ matrix.target }}
+        #     tag: ${{ github.ref }}
+        #     overwrite: true
